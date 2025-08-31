@@ -9,3 +9,7 @@ class Signup(BaseModel):
     name: str
     email: EmailStr
     password: str
+
+class Logout(BaseModel):
+    email : EmailStr
+    token : str
