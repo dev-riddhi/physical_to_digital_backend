@@ -1,14 +1,15 @@
 import datetime
-
+from bson.objectid import ObjectId
 class User():
     
-    def __init__(self,name: str,email: str,password: str,type: str,token: str):
+    def __init__(self,name: str,email: str,password: str,created_at:datetime,type: str,access_token: str,refresh_token:str):
         self.name = name
         self.email = email
         self.password = password
-        self.created_at = datetime.datetime.now()
+        self.created_at = created_at
         self.type = type
-        self.token = token
+        self.access_token = access_token
+        self.refresh_token = refresh_token
 
     def dict(self):
         data = {
@@ -17,25 +18,40 @@ class User():
             "password": self.password,
             "created_at": self.created_at,
             "type": self.type ,
-            "token": self.token,
+            "access_token": self.access_token,
+            "refresh_token" : self.refresh_token
         }
 
         return data
 
 class History():
-    user_id: str
+    user_id: ObjectId
+    title: str
+    creation_data: str
     images: list[str]
-    timestamp: str
-    details: str
+
+    def dict(self):
+        return {
+            "user_id": self.user_id,
+            "creation_data": self.creation_data,
+            "title": self.title,
+            "images": self.images,
+        }
 
 
-class UploadedImage():
-    user_id: str
+class Images():
+    user_id: ObjectId
     image_url: str
-    uploaded_at: str
+    uploaded_at: datetime
+
+    def dict(self):
+        return {}
 
 
 class Analysis():
-    visiters: int
+    total_visiters: int
     total_images: int
-    active_users: int
+    recorded_date : datetime
+
+    def dict(self):
+        return {}
