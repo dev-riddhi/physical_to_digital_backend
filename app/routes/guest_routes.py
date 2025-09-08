@@ -1,11 +1,10 @@
-from fastapi import APIRouter,Header
-from app.models.user_model import User
+from fastapi import APIRouter, Header
 
 guest = APIRouter(
     prefix="/api/guest",
 )
 
-@guest.get("/")
-def get_token(request : User, authoauthorization: str = Header()):
-    return {}
 
+@guest.get("/")
+def get_token(authoauthorization: str = Header()):
+    return {}
