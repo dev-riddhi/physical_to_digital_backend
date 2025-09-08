@@ -44,6 +44,9 @@ class UserCollection:
         )
 
     def update_access_token(self, refresh_token: str, new_access_token: str):
+        if not self._collection.find_one({"refresh_token": refresh_token}):
+            return None
+        
         return self._collection.update_one(
             {"refresh_token": refresh_token},
             {"$set": {"access_token": new_access_token}},

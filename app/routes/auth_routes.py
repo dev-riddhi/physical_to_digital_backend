@@ -3,6 +3,11 @@ from app.models.auth_model import Login, Signup, Logout
 from app.collections.user_collection import UserCollection
 from app.models.db_model import User
 from app.common.token_genarator import generate_token
+from app.common.response_structure import (
+    error_response,
+    success_response,
+    custom_response
+)
 from enum import Enum
 from datetime import datetime
 
@@ -46,18 +51,22 @@ def access_token_route(
 
 
 @auth.post("/refresh/access")
-def access_token_route(refresh_token: str | None = Cookie()):
+def access_token_route(refresh_token: str | None = Cookie(default=None)):
+
+    print(refresh_token)
 
     user_collection = UserCollection()
 
     new_access_token = generate_token(128)
 
-    if not user_collection.update_access_token(refresh_token, new_access_token):
-        return {"message": "db error"}
+    updated_user = user_collection.update_access_token(refresh_token, new_access_token)
+
+    if not updated_user:
+        return error_response(message="not logged in",code=35267890)
 
     user_collection.close_connection()
 
-    return {"access_token": new_access_token}
+    return custom_response(message="you are logged in",code=6547389,data={"access_token" : new_access_token,"user_type" : updated_user["type"]})
 
 
 @auth.post("/login")
