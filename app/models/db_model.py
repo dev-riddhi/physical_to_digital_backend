@@ -13,7 +13,6 @@ class User:
         type: str,
         history: list[ObjectId],
         access_token: str,
-        refresh_token: str,
     ):
         self.name = name
         self.email = email
@@ -22,7 +21,6 @@ class User:
         self.type = type
         self.history = history
         self.access_token = access_token
-        self.refresh_token = refresh_token
 
     def dict(self):
         data = {
@@ -33,7 +31,6 @@ class User:
             "type": self.type,
             "history": self.history,
             "access_token": self.access_token,
-            "refresh_token": self.refresh_token,
         }
 
         return data

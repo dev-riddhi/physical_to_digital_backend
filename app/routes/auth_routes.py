@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response, Cookie
+from fastapi import APIRouter, Response, Cookie, Header
 from app.models.auth_model import Login, Signup, Logout
 from app.collections.user_collection import UserCollection
 from app.models.db_model import User
@@ -6,10 +6,10 @@ from app.common.token_genarator import generate_token
 from app.common.response_structure import (
     error_response,
     success_response,
-    custom_response
+    custom_response,
 )
 from enum import Enum
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 
 class UserType(Enum):
@@ -23,56 +23,25 @@ auth = APIRouter(
 )
 
 
-@auth.post("/refresh")
-def access_token_route(
-    response: Response, refresh_token: str | None = Cookie(default=None)
-):
-    user_collection = UserCollection()
-
-    new_refresh_token = generate_token(128)
-
-    if not user_collection.update_refresh_token(
-        old_refresh_token=refresh_token, new_refresh_token=new_refresh_token
-    ):
-        return {"message": "token not found"}
-
-    response.set_cookie(
-        key="refresh_token",
-        value=new_refresh_token,
-        httponly=True,
-        secure=True,
-        samesite="strict",
-        path="/api/refresh",
-    )
-
-    user_collection.close_connection()
-
-    return {"message": "Token updated successfully"}
-
-
-@auth.post("/refresh/access")
-def access_token_route(refresh_token: str | None = Cookie(default=None)):
-
-    print(refresh_token)
-
+@auth.post("/access")
+def access_route(access_token: str = Header(default=None)):
     user_collection = UserCollection()
 
     new_access_token = generate_token(128)
 
-    updated_user = user_collection.update_access_token(refresh_token, new_access_token)
+    if not user_collection.verify_access_token_and_update(
+        access_token, new_access_token
+    ):
+        return error_response(message="Unauthorised Access", code=98765432)
 
-    if not updated_user:
-        return error_response(message="not logged in",code=35267890)
-
-    user_collection.close_connection()
-
-    return custom_response(message="you are logged in",code=6547389,data={"access_token" : new_access_token,"user_type" : updated_user["type"]})
+    return custom_response(
+        message="success", code=987654, data={"access_token": new_access_token}
+    )
 
 
 @auth.post("/login")
 def login_route(
     request: Login,
-    response: Response,
 ):
 
     user_collection = UserCollection()
@@ -85,39 +54,28 @@ def login_route(
     if user["password"] != request.password:
         return {"message": "password error"}
 
-    refresh_token = generate_token(128)
     access_token = generate_token(128)
 
-    if not user_collection.update_tokens_by_email(
-        request.email, refresh_token, access_token
-    ):
+    if not user_collection.update_token_by_email(request.email, access_token):
         return {"message": "Unable to login"}
-
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=True,
-        secure=True,
-        samesite="strict",
-        path="/api/refresh",
-    )
-
-    access_token = generate_token(128)
 
     user_collection.close_connection()
 
-    return {"access_token": access_token}
+    return custom_response(
+        message="Login success fully",
+        code=87654,
+        data={"access_token": access_token, "user_type": user["type"]},
+    )
 
 
 @auth.post("/signup")
-def signup_route(request: Signup, response: Response):
+def signup_route(request: Signup):
 
     user_collection = UserCollection()
 
     if user_collection.find_user(request.email):
         return {"message": "email is already used"}
 
-    refresh_token = generate_token(128)
     access_token = generate_token(128)
 
     new_user = User(
@@ -126,18 +84,8 @@ def signup_route(request: Signup, response: Response):
         password=request.password,
         type=UserType.USER.value,
         access_token=access_token,
-        refresh_token=refresh_token,
         created_at=datetime.now(),
         history=[],
-    )
-
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=True,
-        secure=True,
-        samesite="strict",
-        path="/api/refresh",
     )
 
     if not user_collection.create_user(new_user):
@@ -145,11 +93,15 @@ def signup_route(request: Signup, response: Response):
 
     user_collection.close_connection()
 
-    return {"access_token": access_token}
+    return custom_response(
+        message="Login success fully",
+        code=87654,
+        data={"access_token": access_token, "user_type": UserType.USER.value},
+    )
 
 
-@auth.post("/refresh/logout")
-def logout_route(response: Response, refresh_token: str | None = Cookie(default=None)):
+@auth.post("/logout")
+def logout_route(refresh_token: str | None = Header(default=None)):
 
     user_collection = UserCollection()
 

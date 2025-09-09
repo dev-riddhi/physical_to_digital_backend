@@ -21,41 +21,28 @@ class UserCollection:
     def find_user(self, email: str):
         return self._collection.find_one({"email": email})
 
-    def update_tokens_by_email(
-        self, email: str, new_refresh_token: str, new_access_token: str
-    ):
+    def update_token_by_email(self, email: str, new_access_token: str):
         return self._collection.update_one(
             {"email": email},
             {
                 "$set": {
-                    "refresh_token": new_refresh_token,
                     "access_token": new_access_token,
                 }
             },
         )
 
-    def verify_access(self, access_token: str):
-        return self._collection.find_one({"access_token": access_token})
-
-    def update_refresh_token(self, old_refresh_token: str, new_refresh_token: str):
-        return self._collection.update_one(
-            {"refresh_token": old_refresh_token},
-            {"$set": {"refresh_token": new_refresh_token}},
-        )
-
-    def update_access_token(self, refresh_token: str, new_access_token: str):
-        if not self._collection.find_one({"refresh_token": refresh_token}):
+    def verify_access_token_and_update(self, access_token: str, new_access_token: str):
+        if not self._collection.find_one({"access_token": access_token}):
             return None
-        
+
         return self._collection.update_one(
-            {"refresh_token": refresh_token},
-            {"$set": {"access_token": new_access_token}},
+            {"access_token": access_token}, {"$set": {"access_token": new_access_token}}
         )
 
-    def remove_all_tokens(self, refresh_token: str):
+    def remove_all_tokens(self, access_token: str):
         return self._collection.update_one(
-            {"refresh_token": refresh_token},
-            {"$set": {"refresh_token": "", "access_token": ""}},
+            {"access_token": access_token},
+            {"$set": {"access_token": ""}},
         )
 
     def check_refresh_token(self, refresh_token: str):
