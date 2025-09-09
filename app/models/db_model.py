@@ -92,16 +92,12 @@ class Analysis:
 
 
 class Guest:
-    def __init__(self, ip: str, limit: int, refresh_token: str, access_token: str):
-        self.ip = ip
+    def __init__(self, limit: int, access_token: str):
         self.limit = limit
-        self.refresh_token = refresh_token
         self.access_token = access_token
 
     def dict(self):
         return {
-            "ip": self.ip,
             "limit": self.limit,
-            "refresh_token": self.refresh_token,
             "access_token": self.access_token,
         }

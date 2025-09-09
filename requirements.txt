@@ -3,3 +3,6 @@ uvicorn
 pymongo
 pydantic[email]
 python-dotenv
+paddlepaddle 
+paddleocr
+pytesseract

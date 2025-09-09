@@ -14,15 +14,20 @@ class GuestCollection:
     def create_guest(self, guest: Guest):
         return self._collection.insert_one(guest.dict())
 
-    def read_guest(self, refresh_token: str):
-        return self._collection.find_one({"refresh_token": refresh_token})
+    def read_guest(self, access_token: str):
+        return self._collection.find_one({"access_token": access_token})
 
-    def update_guest(self, refresh_token: str, guest: Guest):
+    def update_guest_token(self, access_token: str, new_access_token: str):
         return self._collection.update_one(
-            {"refresh_token": refresh_token}, {"$set": guest.dict()}
+            {"access_token": access_token}, {"$set": {"access_token": new_access_token}}
         )
 
-    def update_limit(self, refresh_token: str, limit: int):
+    def update_guest(self, access_token: str, guest: Guest):
         return self._collection.update_one(
-            {"refresh_token": refresh_token}, {"$set": {"limit": limit}}
+            {"access_token": access_token}, {"$set": guest.dict()}
+        )
+
+    def update_limit(self, access_token: str, limit: int):
+        return self._collection.update_one(
+            {"access_token": access_token}, {"$set": {"limit": limit}}
         )

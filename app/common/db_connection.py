@@ -20,10 +20,15 @@ class Database:
         elif collection == "history":
             self._client = MongoClient(self._db_uri)
             return self._client[self._db_name][collection]
-        elif collection == "images":
-            pass
+        elif collection == "guest":
+            self._client = MongoClient(self._db_uri)
+            return self._client[self._db_name][collection]
         elif collection == "analysis":
-            pass
+            self._client = MongoClient(self._db_uri)
+            return self._client[self._db_name][collection]
+        elif collection == "images":
+            self._client = MongoClient(self._db_uri)
+            return self._client[self._db_name][collection]
 
     def closeDB(self):
         self._client.close()

@@ -9,7 +9,7 @@ from app.common.response_structure import (
     custom_response,
 )
 from enum import Enum
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 
 class UserType(Enum):
@@ -110,8 +110,6 @@ def logout_route(refresh_token: str | None = Header(default=None)):
 
     if not user_collection.remove_all_tokens(refresh_token):
         return {"message": "unauthorised access"}
-
-    response.delete_cookie(key="refresh_token", path="/api/refresh")
 
     user_collection.close_connection()
 
