@@ -1,7 +1,11 @@
-/node_modules
-/build
 .env
-/.venv
-/app/*/__pycache__
-/app/__pycache__
-/__pycache__
+.venv
+app/*/__pycache__
+app/__pycache__
+__pycache__
+uploads/user/*.jpeg
+uploads/user/*.png
+uploads/user/*.jpg
+uploads/guest/*.jpeg
+uploads/guest/*.png
+uploads/guest/*.jpg

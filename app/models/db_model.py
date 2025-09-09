@@ -58,16 +58,19 @@ class Image:
         self,
         user_id: ObjectId,
         image_path: str,
+        user_type: str,
         uploaded_at: datetime,
     ):
         self.user_id = user_id
         self.image_path = image_path
+        self.user_type = user_type
         self.uploaded_at = uploaded_at
 
     def dict(self):
         return {
             "user_id": self.user_id,
             "image_path": self.image_path,
+            "user_type": self.user_type,
             "uploaded_at": self.uploaded_at,
         }
 

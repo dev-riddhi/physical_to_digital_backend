@@ -7,7 +7,6 @@ from app.routes.admin_routes import admin
 
 app = FastAPI()
 
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
