@@ -58,9 +58,10 @@ def access_token_route(access_token: str | None = Header(default=None)):
 
 @guest.post("/convert")
 def convert_image_route(
-    model: str = Body(),
     access_token: str = Header(),
     files: list[UploadFile] = File(),
+    model: str = Body(),
+    title: str = Body(),
 ):
     guest_collection = GuestCollection()
 
