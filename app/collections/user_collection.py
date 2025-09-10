@@ -40,13 +40,18 @@ class UserCollection:
         )
 
     def remove_all_tokens(self, access_token: str):
+        if not self._collection.find_one({"access_token": access_token}):
+            return None
+
         return self._collection.update_one(
             {"access_token": access_token},
             {"$set": {"access_token": ""}},
         )
 
-    def check_refresh_token(self, refresh_token: str):
-        return self._collection.find_one({"refresh_token": refresh_token})
+    def update_history(self, access_token: str, history: list[str]):
+        return self._collection.update_one(
+            {"access_token": access_token}, {"$set": {"history": history}}
+        )
 
     ## ============= auth end ===============
 
@@ -64,8 +69,17 @@ class UserCollection:
         )
 
     def delete_user(self, access_token: str, password: str):
+        user = self._collection.find_one({"access_token": access_token})
+        if not user:
+            return None
+
+        if user["password"] != password:
+            return None
+
         return self._collection.delete_one(
-            {"access_token": access_token, "password": password}
+            {
+                "access_token": access_token,
+            }
         )
 
     ## =============== crud end ==================

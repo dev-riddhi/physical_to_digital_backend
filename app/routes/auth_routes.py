@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Response, Cookie, Header
-from app.models.auth_model import Login, Signup, Logout
+from fastapi import APIRouter, Header
+from app.models.auth_model import Login, Signup
 from app.collections.user_collection import UserCollection
 from app.models.db_model import User
 from app.common.token_genarator import generate_token
@@ -101,16 +101,13 @@ def signup_route(request: Signup):
 
 
 @auth.post("/logout")
-def logout_route(refresh_token: str | None = Header(default=None)):
+def logout_route(access_token: str | None = Header()):
 
     user_collection = UserCollection()
 
-    if not user_collection.check_refresh_token(refresh_token):
-        return {"message": "Can't Logout"}
-
-    if not user_collection.remove_all_tokens(refresh_token):
-        return {"message": "unauthorised access"}
+    if not user_collection.remove_all_tokens(access_token):
+        return error_response(message="Unauthorised access", code=87654)
 
     user_collection.close_connection()
 
-    return {"message": "Logout successful"}
+    return success_response(message="Logout successful", code=98765)

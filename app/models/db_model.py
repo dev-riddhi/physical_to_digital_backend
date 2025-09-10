@@ -1,5 +1,4 @@
-import datetime
-from bson.objectid import ObjectId
+from datetime import datetime
 
 
 class User:
@@ -11,7 +10,7 @@ class User:
         password: str,
         created_at: datetime,
         type: str,
-        history: list[ObjectId],
+        history: list[str],
         access_token: str,
     ):
         self.name = name
@@ -38,16 +37,26 @@ class User:
 
 class History:
 
-    def __init__(self, title: str, creation_data: str, images: list[ObjectId]):
+    def __init__(
+        self,
+        user_id: str,
+        title: str,
+        converted_text_list: list[str],
+        creation_date: datetime,
+        images: list[str],
+    ):
+        self.user_id = user_id
         self.title = title
-        self.creation_data = creation_data
+        self.converted_text_list = converted_text_list
+        self.creation_date = creation_date
         self.images = images
 
     def dict(self):
         return {
             "user_id": self.user_id,
-            "creation_data": self.creation_data,
             "title": self.title,
+            "converted_text_list": self.converted_text_list,
+            "creation_date": self.creation_date,
             "images": self.images,
         }
 
@@ -56,7 +65,7 @@ class Image:
 
     def __init__(
         self,
-        user_id: ObjectId,
+        user_id: str,
         image_path: str,
         user_type: str,
         uploaded_at: datetime,
