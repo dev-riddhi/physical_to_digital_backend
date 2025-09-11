@@ -5,7 +5,7 @@ pymongo
 python-dotenv
 paddlepaddle 
 paddleocr
-pytesseract            
+pytesseract    
 pillow                                                    
 opencv-python
 opencv-python-headless
