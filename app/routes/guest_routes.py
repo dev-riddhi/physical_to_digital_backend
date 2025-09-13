@@ -68,7 +68,7 @@ def convert_image_route(
     guest = guest_collection.read_guest(access_token=access_token)
 
     if not guest:
-        return error_response(message="Unauthorised access")
+        return error_response(message="Unauthorised access", code=98765)
 
     for file in files:
 
